@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BeSa Hiring</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg-sunken: #f7f8fa; --bg-active: #eceef2;
+    --border: #e7e9ee; --text: #16181d; --text-2: #3d4149; --text-3: #646b79; --text-4: #8a90a0;
+    --accent: #2857d6; --accent-soft: rgba(40,87,214,.08); --accent-border: rgba(40,87,214,.32);
+    --green: #157a4e; --green-bg: #e9f6ef; --green-border: #b5decb;
+    --amber: #91580b; --amber-bg: #faf0dd; --amber-border: #ebcf98;
+    --red: #b3261e; --red-bg: #fbebea; --red-border: #f0bcb8;
+    --r: 10px; --shadow: 0 1px 2px rgba(22,24,29,.04); --shadow-lg: 0 12px 32px rgba(22,24,29,.12);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { color-scheme: light; }
+  body { font-family: var(--font); font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg-sunken); -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+
+  /* topbar */
+  .topbar { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .mark { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(140deg, var(--accent), #4d78e6);
+          color: #fff; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; }
+  .brand { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+  .fresh { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-4); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px 16px 80px; }
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+          box-shadow: var(--shadow); padding: 20px; margin-bottom: 14px; }
+
+  /* login */
+  .gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .gate .card { width: 100%; max-width: 380px; padding: 32px 28px; box-shadow: var(--shadow-lg); text-align: center; }
+  .gate h1 { font-size: 19px; margin: 14px 0 4px; }
+  .gate p { color: var(--text-3); font-size: 13.5px; margin-bottom: 20px; }
+  .gate input { width: 100%; font: inherit; font-size: 16px; text-align: center; letter-spacing: .06em;
+                padding: 11px; border: 1px solid #d4d7de; border-radius: 8px; outline: none; }
+  .gate input:focus { border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .btn { display: inline-block; width: 100%; margin-top: 12px; padding: 11px; font: inherit; font-size: 15px; font-weight: 650;
+         color: #fff; background: var(--accent); border: 0; border-radius: 8px; cursor: pointer; }
+  .btn:disabled { opacity: .55; }
+  .gate .err { display: none; margin-top: 12px; font-size: 13px; color: var(--red); }
+  .gate .foot { margin-top: 18px; font-size: 11.5px; color: var(--text-4); }
+
+  /* banner */
+  .banner { background: var(--bg); border: 1px solid var(--accent-border); border-left: 4px solid var(--accent);
+            border-radius: var(--r); padding: 14px 18px; margin-bottom: 16px; font-size: 15px; font-weight: 650; }
+  .banner.quiet { border-color: var(--border); border-left-color: var(--border); font-weight: 500; color: var(--text-3); }
+
+  /* position card */
+  .pos h2 { font-size: 16px; letter-spacing: -.01em; }
+  .pos-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+  .ready-pill { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--accent);
+                background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+  .funnel { margin: 4px 0 14px; }
+  .frow { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+  .flabel { width: 92px; font-size: 11.5px; color: var(--text-3); flex-shrink: 0; }
+  .ftrack { flex: 1; height: 8px; background: var(--bg-active); border-radius: 4px; overflow: hidden; }
+  .ffill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .5s cubic-bezier(.25,.6,.3,1); }
+  .fnum { width: 34px; text-align: right; font-size: 12px; color: var(--text-2); }
+
+  .crow { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); cursor: pointer; }
+  .crow:active { background: var(--bg-sunken); }
+  .ring { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+          font-size: 13px; font-weight: 750; font-variant-numeric: tabular-nums; }
+  .cname { font-weight: 650; font-size: 14.5px; }
+  .cstage { font-size: 12px; color: var(--text-3); }
+  .chev { margin-left: auto; color: var(--text-4); flex-shrink: 0; }
+  .vpill { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+           padding: 2px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+  .v-green { color: var(--green); background: var(--green-bg); border-color: var(--green-border); }
+  .v-amber { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
+  .v-red { color: var(--red); background: var(--red-bg); border-color: var(--red-border); }
+  .dim-row { opacity: .55; }
+
+  /* detail */
+  .back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-3);
+          text-decoration: none; margin-bottom: 12px; cursor: pointer; background: none; border: none; font-family: inherit; padding: 0; }
+  .dhead { display: flex; gap: 16px; align-items: center; }
+  .ring.lg { width: 62px; height: 62px; font-size: 19px; border-width: 4px; }
+  .dhead h1 { font-size: 20px; letter-spacing: -.015em; }
+  .dhead .sub { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-4); margin: 0 0 10px; }
+  .headline { font-size: 15px; line-height: 1.6; }
+  .fact { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+  .fact .tag { flex-shrink: 0; font-size: 10.5px; font-weight: 700; text-transform: uppercase; padding: 2px 7px;
+               border-radius: 4px; height: fit-content; margin-top: 2px; }
+  .t-yes { color: var(--green); background: var(--green-bg); }
+  .t-no { color: var(--red); background: var(--red-bg); }
+  .t-partial { color: var(--amber); background: var(--amber-bg); }
+  .t-neutral { color: var(--text-3); background: var(--bg-active); }
+  .evidence { color: var(--text-3); font-size: 12.5px; margin-top: 2px; }
+  .stars { color: var(--amber); letter-spacing: 2px; font-size: 14px; }
+  .screl { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+  .gates { display: flex; gap: 8px; margin-top: 16px; }
+  .pgate { flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-sunken); }
+  .pgate .glabel { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-4); }
+  .pgate .gres { font-size: 13px; font-weight: 750; margin-top: 4px; }
+  .pgate .gdate { font-size: 10.5px; color: var(--text-4); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .pgate.g-pass { background: var(--green-bg); border-color: var(--green-border); } .pgate.g-pass .gres { color: var(--green); }
+  .pgate.g-reject { background: var(--red-bg); border-color: var(--red-border); } .pgate.g-reject .gres { color: var(--red); }
+  .pgate.g-pending { background: var(--amber-bg); border-color: var(--amber-border); } .pgate.g-pending .gres { color: var(--amber); }
+  .pgate.g-not_reached .gres { color: var(--text-4); }
+  .gdots { display: inline-flex; gap: 4px; margin-left: 8px; }
+  .gdot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg-active); }
+  .gdot.g-pass { background: var(--green); } .gdot.g-reject { background: var(--red); } .gdot.g-pending { background: var(--amber); }
+  .rail { display: flex; align-items: center; gap: 4px; margin: 6px 0 2px; }
+  .rnode { width: 10px; height: 10px; border-radius: 50%; background: var(--bg-active); flex-shrink: 0; }
+  .rnode.donept { background: var(--accent); }
+  .rnode.cur { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .rline { flex: 1; height: 2px; background: var(--bg-active); }
+  .rline.donept { background: var(--accent); }
+  .rlabel { font-size: 12px; color: var(--text-2); font-weight: 650; margin-top: 6px; }
+  details { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
+  summary { cursor: pointer; font-size: 13px; font-weight: 650; color: var(--text-3); }
+  ul.plain { padding-left: 18px; font-size: 13.5px; }
+  ul.plain li { margin-bottom: 5px; }
+  .footer-note { text-align: center; font-size: 11.5px; color: var(--text-4); margin-top: 26px; line-height: 1.6; }
+  @media (min-width: 760px) { .poslist { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; } .poslist .card { margin-bottom: 0; } }
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <div class="card">
+    <div class="mark" style="margin:0 auto;width:34px;height:34px;font-size:14px">Be</div>
+    <h1>BeSa Hiring</h1>
+    <p>Candidate decisions for your open roles.</p>
+    <input id="code" type="password" inputmode="text" autocomplete="off" placeholder="Access code" aria-label="Access code">
+    <button class="btn" id="open">Open</button>
+    <div class="err" id="gate-err">That code did not work. Check it and try again.</div>
+    <div class="foot">Private link. For Nir only.</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="topbar">
+    <span class="mark">Be</span><span class="brand">BeSa Hiring</span>
+    <span class="fresh"><span class="dot"></span><span id="fresh-label"></span></span>
+  </div>
+  <div class="wrap" id="view"></div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  let DATA = null;
+
+  // ---- crypto: must mirror scripts/publish_dashboard.py exactly ----
+  async function decrypt(blob, linkKey, accessCode) {
+    const enc = new TextEncoder();
+    const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    const material = await crypto.subtle.importKey(
+      "raw", enc.encode(linkKey + ":" + accessCode), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: b64(blob.salt), iterations: blob.iters, hash: "SHA-256" },
+      material, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(blob.iv) }, key, b64(blob.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+
+  function esc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function bandColors(band) {
+    return band === "green" ? ["var(--green)", "var(--green-bg)", "var(--green-border)"]
+         : band === "amber" ? ["var(--amber)", "var(--amber-bg)", "var(--amber-border)"]
+         : ["var(--red)", "var(--red-bg)", "var(--red-border)"];
+  }
+  function ring(fit, band, lg) {
+    const [c, bg, bd] = bandColors(band);
+    return `<span class="ring ${lg ? "lg" : ""}" style="color:${c};background:${bg};border:3px solid ${bd}">${fit}</span>`;
+  }
+  function vclass(k) { return k === "advance" ? "v-green" : (k === "borderline" ? "v-amber" : "v-red"); }
+  const GATE_RESULT = { pass: "Pass", reject: "Reject", pending: "In progress", not_reached: "\u2014" };
+  function gateDots(c) {
+    if (!c.gates) return "";
+    return `<span class="gdots">` + c.gates.map(g =>
+      `<span class="gdot g-${g.result}" title="${esc(g.gate)}: ${GATE_RESULT[g.result] || g.result}${g.at ? " (" + g.at + ")" : ""}"></span>`).join("") + `</span>`;
+  }
+  function gateStrip(c) {
+    if (!c.gates) return "";
+    return `<div class="gates">` + c.gates.map(g => `
+      <div class="pgate g-${g.result}">
+        <div class="glabel">${esc(g.gate)}</div>
+        <div class="gres">${GATE_RESULT[g.result] || esc(g.result)}</div>
+        <div class="gdate">${g.at ? esc(g.at) : "&nbsp;"}</div>
+      </div>`).join("") + `</div>`;
+  }
+  function freshness(ts) {
+    const d = new Date(ts.slice(0,4) + "-" + ts.slice(4,6) + "-" + ts.slice(6,8) + "T" +
+                       ts.slice(9,11) + ":" + ts.slice(11,13) + ":" + ts.slice(13,15) + "Z");
+    const mins = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+    return mins < 60 ? `Updated ${mins} min ago`
+         : mins < 2880 ? `Updated ${Math.round(mins / 60)} h ago`
+         : `Updated ${d.toLocaleDateString()}`;
+  }
+
+  // ---- views ----
+  const STAGE_RAIL = ["In screening", "Interviewed", "Ready for you", "Hired"];
+  function renderHome() {
+    const waiting = DATA.waiting_for_you;
+    let html = waiting > 0
+      ? `<div class="banner">${waiting === 1 ? "1 candidate is" : waiting + " candidates are"} waiting for your call.</div>`
+      : `<div class="banner quiet">Nothing needs you right now. Candidates appear here the moment they are ready.</div>`;
+    html += `<div class="poslist">`;
+    DATA.positions.forEach((p, pi) => {
+      const ready = p.candidates.filter(c => c.stage === "Ready for you").length;
+      html += `<div class="card pos">
+        <div class="pos-head"><h2>${esc(p.role)}</h2>
+          ${ready ? `<span class="ready-pill">${ready} ready for you</span>` : ""}</div>
+        <div class="funnel">` +
+        [["Sourced", p.sourced], ["Contacted", p.contacted],
+         ["In screening", p.in_screening], ["Interviewed", p.candidates.length]]
+          .map(([l, n], i, arr) => {
+            const max = arr[0][1] || 1;
+            return `<div class="frow"><span class="flabel">${l}</span>
+              <span class="ftrack"><span class="ffill" style="width:${Math.min(100, Math.round(100 * n / max))}%"></span></span>
+              <span class="fnum num">${n}</span></div>`;
+          }).join("") + `</div>`;
+      if (p.candidates.length) {
+        html += p.candidates.map((c, ci) => `
+          <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
+            ${ring(c.fit, c.fit_band)}
+            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.stage)}${gateDots(c)}</div></div>
+            ${c.verdict ? `<span class="vpill ${vclass(c.verdict_key)}" style="margin-left:auto">${esc(c.verdict)}</span>` : ""}
+            <span class="chev">&rsaquo;</span>
+          </div>`).join("");
+      } else {
+        html += `<div class="crow" style="cursor:default;color:var(--text-4);font-size:13px">
+          No one interviewed for this role yet. Sourcing is underway.</div>`;
+      }
+      html += `</div>`;
+    });
+    html += `</div>
+      <div class="footer-note">Assessments are prepared from CVs and interview transcripts to speed your read.<br>The call is yours.</div>`;
+    $("view").innerHTML = html;
+    document.querySelectorAll(".crow[data-pos]").forEach(row => {
+      row.addEventListener("click", () =>
+        renderDetail(Number(row.dataset.pos), Number(row.dataset.c)));
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function renderDetail(pi, ci) {
+    const p = DATA.positions[pi], c = p.candidates[ci];
+    const railStop = c.stage === "Passed" ? -1 : STAGE_RAIL.indexOf(c.stage);
+    let html = `<button class="back" id="back">&lsaquo; All candidates</button>
+      <div class="card">
+        <div class="dhead">${ring(c.fit, c.fit_band, true)}
+          <div><h1>${esc(c.name)}</h1><div class="sub">${esc(c.role)}</div>
+          ${c.verdict ? `<div style="margin-top:6px"><span class="vpill ${vclass(c.verdict_key)}">${esc(c.verdict)}</span>
+            ${c.confidence ? `<span style="font-size:11.5px;color:var(--text-4)"> ${esc(c.confidence)} confidence</span>` : ""}</div>` : ""}
+          </div></div>
+        ${gateStrip(c)}
+      </div>`;
+
+    if (c.headline) html += `<div class="card"><h3>The call in one line</h3><p class="headline">${esc(c.headline)}</p></div>`;
+    if (c.checked_out && c.checked_out.length) {
+      html += `<div class="card"><h3>What checked out</h3>` + c.checked_out.map(f => `
+        <div class="fact"><span class="tag t-${f.met === "yes" ? "yes" : f.met === "no" ? "no" : f.met === "partial" ? "partial" : "neutral"}">${esc(f.met || "n/a").replace("_", " ")}</span>
+          <div>${esc(f.point)}${f.evidence ? `<div class="evidence">${esc(f.evidence)}</div>` : ""}</div></div>`).join("") + `</div>`;
+    }
+    if (c.watch_outs && c.watch_outs.length) {
+      html += `<div class="card"><h3>Watch-outs</h3><ul class="plain">` +
+        c.watch_outs.map(w => `<li>${esc(w)}</li>`).join("") + `</ul></div>`;
+    }
+    if (c.new_in_interview && c.new_in_interview.length) {
+      html += `<div class="card"><h3>New in the interview</h3><ul class="plain">` +
+        c.new_in_interview.map(w => `<li>${esc(w)}</li>`).join("") + `</ul></div>`;
+    }
+    if (c.scorecard && c.scorecard.some(s => s.stars)) {
+      html += `<div class="card"><h3>Interview scorecard</h3>` + c.scorecard.map(s => `
+        <div class="screl"><span>${esc(s.label)}</span>
+          <span>${s.stars ? `<span class="stars">${"★".repeat(s.stars)}${"☆".repeat(5 - s.stars)}</span>`
+                          : `<span style="color:var(--text-4);font-size:12px">not covered</span>`}</span></div>`).join("") + `</div>`;
+    }
+    if (c.breakdown && c.breakdown.length) {
+      html += `<div class="card"><details><summary>See the full breakdown</summary>` +
+        c.breakdown.map(d => `<div class="fact"><span class="tag t-neutral num">${d.score}/10</span>
+          <div>${esc(d.label)}${d.rationale ? `<div class="evidence">${esc(d.rationale)}</div>` : ""}</div></div>`).join("") +
+        `</details></div>`;
+    }
+    if (c.timeline && c.timeline.length) {
+      html += `<div class="card"><h3>Timeline</h3>` + c.timeline.map(t =>
+        `<div class="screl"><span>${esc(t.stage)}</span><span class="num" style="color:var(--text-4);font-size:12.5px">${t.at.slice(0,4)}-${t.at.slice(4,6)}-${t.at.slice(6,8)}</span></div>`).join("") + `</div>`;
+    }
+    html += `<div class="footer-note">Assessments are prepared from CVs and interview transcripts to speed your read.<br>The call is yours.</div>`;
+    $("view").innerHTML = html;
+    $("back").addEventListener("click", renderHome);
+    window.scrollTo(0, 0);
+  }
+
+  // ---- gate flow ----
+  async function tryOpen() {
+    const btn = $("open"), err = $("gate-err");
+    const linkKey = (location.hash || "").replace(/^#/, "");
+    err.style.display = "none";
+    if (!linkKey) { err.textContent = "This link is incomplete. Use the exact link you were sent."; err.style.display = "block"; return; }
+    btn.disabled = true; btn.textContent = "Opening…";
+    try {
+      const blob = await (await fetch("data.enc.json", { cache: "no-store" })).json();
+      DATA = await decrypt(blob, linkKey, $("code").value.trim());
+      $("fresh-label").textContent = freshness(DATA.generated_at);
+      $("gate").style.display = "none";
+      $("app").style.display = "";
+      renderHome();
+    } catch (e) {
+      err.textContent = "That code did not work. Check it and try again.";
+      err.style.display = "block";
+    }
+    btn.disabled = false; btn.textContent = "Open";
+  }
+  $("open").addEventListener("click", tryOpen);
+  $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") tryOpen(); });
+  $("code").focus();
+})();
+</script>
+</body>
+</html>
