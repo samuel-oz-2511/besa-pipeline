@@ -154,11 +154,11 @@
   let DATA = null;
 
   // ---- crypto: must mirror scripts/publish_dashboard.py exactly ----
-  async function decrypt(blob, linkKey, accessCode) {
+  async function decrypt(blob, accessCode) {
     const enc = new TextEncoder();
     const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
     const material = await crypto.subtle.importKey(
-      "raw", enc.encode(linkKey + ":" + accessCode), "PBKDF2", false, ["deriveKey"]);
+      "raw", enc.encode(accessCode), "PBKDF2", false, ["deriveKey"]);
     const key = await crypto.subtle.deriveKey(
       { name: "PBKDF2", salt: b64(blob.salt), iterations: blob.iters, hash: "SHA-256" },
       material, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
@@ -299,13 +299,11 @@
   // ---- gate flow ----
   async function tryOpen() {
     const btn = $("open"), err = $("gate-err");
-    const linkKey = (location.hash || "").replace(/^#/, "");
     err.style.display = "none";
-    if (!linkKey) { err.textContent = "This link is incomplete. Use the exact link you were sent."; err.style.display = "block"; return; }
     btn.disabled = true; btn.textContent = "Opening…";
     try {
       const blob = await (await fetch("data.enc.json", { cache: "no-store" })).json();
-      DATA = await decrypt(blob, linkKey, $("code").value.trim());
+      DATA = await decrypt(blob, $("code").value.trim());
       $("fresh-label").textContent = freshness(DATA.generated_at);
       $("gate").style.display = "none";
       $("app").style.display = "";
