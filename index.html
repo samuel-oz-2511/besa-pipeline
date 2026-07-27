@@ -88,9 +88,24 @@
   .cname { font-weight: 650; font-size: 14.5px; }
   .cstage { font-size: 12px; color: var(--text-3); }
   .chev { margin-left: auto; color: var(--text-4); flex-shrink: 0; }
+  :root { --stage-1:#57606f; --stage-1-bg:#f2f4f7; --stage-1-border:#d4d7de;
+    --stage-2:#0e7490; --stage-2-bg:#ecf6f9; --stage-2-border:#b3dbe6;
+    --stage-3:#0c6478; --stage-3-bg:#ddeef4; --stage-3-border:#8fc8da;
+    --stage-4:#2857d6; --stage-4-bg:#ecf0fb; --stage-4-border:#c6d2f2;
+    --stage-5:#1f47b6; --stage-5-bg:#e0e7f9; --stage-5-border:#a9bdec;
+    --stage-6:#5b34b8; --stage-6-bg:#f0ebfb; --stage-6-border:#cfc2ef; }
   .stagetag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 10px;
-    border-radius: 14px; background: var(--accent-soft, rgba(40,87,214,.08));
-    color: var(--accent); border: 1px solid rgba(40,87,214,.32); white-space: nowrap; }
+    border-radius: 14px; background: var(--bg-sunken); color: var(--text-3);
+    border: 1px solid var(--border); white-space: nowrap; }
+  .stagetag.st-sourced             { color: var(--stage-1); background: var(--stage-1-bg); border-color: var(--stage-1-border); }
+  .stagetag.st-waiting_shmulik     { color: var(--stage-2); background: var(--stage-2-bg); border-color: var(--stage-2-border); border-style: dashed; }
+  .stagetag.st-interviewed_shmulik { color: var(--stage-3); background: var(--stage-3-bg); border-color: var(--stage-3-border); }
+  .stagetag.st-waiting_hm          { color: var(--stage-4); background: var(--stage-4-bg); border-color: var(--stage-4-border); border-style: dashed; }
+  .stagetag.st-interviewed_hm      { color: var(--stage-5); background: var(--stage-5-bg); border-color: var(--stage-5-border); }
+  .stagetag.st-waiting_vp          { color: var(--stage-6); background: var(--stage-6-bg); border-color: var(--stage-6-border); border-style: dashed; }
+  .stagetag.st-Hired  { color: var(--green); background: var(--green-bg); border-color: var(--green-border); }
+  .stagetag.st-Passed { color: var(--red);   background: var(--red-bg);   border-color: var(--red-border); }
+  .stagetag.st-Parked { color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border); }
   .stagetag.big { font-size: 13px; padding: 5px 14px; margin-top: 6px; }
   .lilink { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 650; }
   .lilink:hover { text-decoration: underline; }
@@ -199,9 +214,9 @@
     const [c, bg, bd] = bandColors(band);
     return `<span class="ring ${lg ? "lg" : ""}" style="color:${c};background:${bg};border:3px solid ${bd}">${fit}</span>`;
   }
-  function stageTag(label, big) {
+  function stageTag(label, key, big) {
     if (!label) return "";
-    return `<span class="stagetag ${big ? "big" : ""}">${esc(label)}</span>`;
+    return `<span class="stagetag st-${esc(key || "")} ${big ? "big" : ""}">${esc(label)}</span>`;
   }
   function gateDots(c) { return ""; }
   function gateStrip(c) {
@@ -234,7 +249,7 @@
   function nirRow(c) {
     return `<div class="crow" data-id="${esc(c.id)}">
       <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
-      <span style="margin-left:auto">${stageTag(c.process_label)}</span>
+      <span style="margin-left:auto">${stageTag(c.process_label, c.process_key)}</span>
       <span class="chev">&rsaquo;</span></div>`;
   }
 
@@ -283,7 +298,7 @@
         html += p.candidates.map((c, ci) => `
           <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
             <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
-            <span style="margin-left:auto">${stageTag(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : c.process_label)}</span>
+            <span style="margin-left:auto">${["Passed","Hired","Parked"].includes(c.stage) ? stageTag(c.stage, c.stage) : stageTag(c.process_label, c.process_key)}</span>
             <span class="chev">&rsaquo;</span>
           </div>`).join("");
       } else {
@@ -315,7 +330,7 @@
         <div class="dhead">
           <div><h1>${esc(c.name)}</h1><div class="sub">${esc(c.role)}
             ${c.linkedin ? ` &middot; <a class="lilink" href="${esc(c.linkedin)}" target="_blank" rel="noopener">LinkedIn &#8599;</a>` : ""}</div>
-          <div>${stageTag(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : c.process_label, true)}</div>
+          <div>${["Passed","Hired","Parked"].includes(c.stage) ? stageTag(c.stage, c.stage, true) : stageTag(c.process_label, c.process_key, true)}</div>
           </div></div>
         ${gateStrip(c)}
       </div>`;
