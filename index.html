@@ -385,7 +385,7 @@
       if (p.candidates.length) {
         html += p.candidates.map((c, ci) => `
           <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
-            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
+            <div><div class="cname">${esc(c.name)}</div></div>
             <span class="ctag">${["Passed","Hired","Parked"].includes(c.stage) ? stageTag(c.stage, c.stage) : stageTag(c.process_label, c.process_key)}</span>
             <span class="chev-slot"><span class="chev">&rsaquo;</span></span>
           </div>`).join("");
@@ -396,7 +396,7 @@
       html += `</div>`;
     });
     html += `</div>
-      <div class="footer-note">Assessments are prepared from CVs and interview transcripts to speed your read.<br>The call is yours.</div>`;
+      <div class="footer-note">Pipeline maintained by Shmulik &middot; updates automatically.<br>The call is yours.</div>`;
     $("view").innerHTML = html;
     document.querySelectorAll(".crow[data-pos]").forEach(row => {
       row.addEventListener("click", () =>
