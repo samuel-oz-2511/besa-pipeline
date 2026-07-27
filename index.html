@@ -49,6 +49,21 @@
   .gate .err { display: none; margin-top: 12px; font-size: 13px; color: var(--red); }
   .gate .foot { margin-top: 18px; font-size: 11.5px; color: var(--text-4); }
 
+  /* nir pipeline tiles */
+  .tiles { display: flex; gap: 10px; margin-bottom: 16px; }
+  .tile { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+          box-shadow: var(--shadow); padding: 14px 12px; text-align: center; }
+  .tile.lead { border-color: var(--accent-border); background: var(--accent-soft); }
+  .tile .tn { font-size: 30px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .tile.lead .tn { color: var(--accent); }
+  .tile.rej .tn { color: var(--red); }
+  .tile .tl { font-size: 11.5px; font-weight: 650; color: var(--text-3); margin-top: 5px; text-transform: uppercase; letter-spacing: .04em; }
+  .tile .ts { font-size: 10.5px; color: var(--text-4); margin-top: 2px; }
+  .sec-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-4); margin: 20px 0 6px; }
+  .muted-line { font-size: 12.5px; color: var(--text-4); margin: 10px 2px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 26px 0 16px; }
+  .explore-h { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+
   /* banner */
   .banner { background: var(--bg); border: 1px solid var(--accent-border); border-left: 4px solid var(--accent);
             border-radius: var(--r); padding: 14px 18px; margin-bottom: 16px; font-size: 15px; font-weight: 650; }
@@ -203,12 +218,45 @@
 
   // ---- views ----
   const STAGE_RAIL = ["In screening", "Interviewed", "Ready for you", "Hired"];
+  function buildIndex() {
+    DATA._byId = {};
+    DATA.positions.forEach((p, pi) => p.candidates.forEach((c, ci) => { DATA._byId[c.id] = [pi, ci]; }));
+  }
+  function nirRow(c) {
+    return `<div class="crow" data-id="${esc(c.id)}">
+      ${ring(c.fit, c.fit_band)}
+      <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
+      ${c.verdict ? `<span class="vpill ${vclass(c.verdict_key)}" style="margin-left:auto">${esc(c.verdict)}</span>` : ""}
+      <span class="chev">&rsaquo;</span></div>`;
+  }
+
   function renderHome() {
-    const waiting = DATA.waiting_for_you;
-    let html = waiting > 0
-      ? `<div class="banner">${waiting === 1 ? "1 candidate is" : waiting + " candidates are"} waiting for your call.</div>`
-      : `<div class="banner quiet">Nothing needs you right now. Candidates appear here the moment they are ready.</div>`;
-    html += `<div class="poslist">`;
+    buildIndex();
+    const n = DATA.nir;
+    const going = n.going_to_see, hired = n.hired, rejected = n.rejected;
+    let html = `<div class="tiles">
+      <div class="tile lead"><div class="tn">${going.length}</div><div class="tl">Going to see</div><div class="ts">coming up for you</div></div>
+      <div class="tile"><div class="tn">${n.seen_count}</div><div class="tl">Seen</div><div class="ts">${hired.length} hired &middot; ${rejected.length} passed</div></div>
+      <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">you passed</div></div>
+    </div>`;
+
+    if (going.length) {
+      html += `<div class="sec-title">Coming up for you</div><div class="card" style="padding:6px 20px">${going.map(nirRow).join("")}</div>`;
+    }
+    if (hired.length || rejected.length) {
+      html += `<div class="sec-title">You've decided</div><div class="card" style="padding:6px 20px">${hired.concat(rejected).map(nirRow).join("")}</div>`;
+    }
+    if (!going.length && !hired.length && !rejected.length) {
+      html += `<div class="banner quiet">No candidates in your pipeline yet. They appear here the moment one is cleared to you.</div>`;
+    }
+    if (n.in_screening) {
+      html += `<div class="muted-line">${n.in_screening} more in screening with the recruiter, not yet cleared to you.</div>`;
+    }
+
+    // keep the full per-position view below, for exploring
+    html += `<hr class="divider"><div class="explore-h">Explore the full pipeline</div>
+      <div class="muted-line" style="margin-top:0">Every role, sourcing to interview.</div>
+      <div class="poslist">`;
     DATA.positions.forEach((p, pi) => {
       const ready = p.candidates.filter(c => c.stage === "Ready for you").length;
       html += `<div class="card pos">
@@ -243,6 +291,12 @@
     document.querySelectorAll(".crow[data-pos]").forEach(row => {
       row.addEventListener("click", () =>
         renderDetail(Number(row.dataset.pos), Number(row.dataset.c)));
+    });
+    document.querySelectorAll(".crow[data-id]").forEach(row => {
+      row.addEventListener("click", () => {
+        const idx = DATA._byId[row.dataset.id];
+        if (idx) renderDetail(idx[0], idx[1]);
+      });
     });
     window.scrollTo(0, 0);
   }
