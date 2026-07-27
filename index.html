@@ -59,6 +59,10 @@
   .tile.rej .tn { color: var(--red); }
   .tile .tl { font-size: 11.5px; font-weight: 650; color: var(--text-3); margin-top: 5px; text-transform: uppercase; letter-spacing: .04em; }
   .tile .ts { font-size: 10.5px; color: var(--text-4); margin-top: 2px; }
+  .crow-static { cursor: default; }
+  .role-sub { font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-4); padding: 12px 0 2px; border-bottom: 1px solid var(--border); }
+  .role-count { font-weight: 600; color: var(--text-3); margin-left: 4px; }
   .action-card { border-left: 3px solid var(--accent); }
   .dim-card { opacity: .82; }
   .sec-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-4); margin: 20px 0 6px; }
@@ -317,10 +321,18 @@
     DATA.positions.forEach((p, pi) => p.candidates.forEach((c, ci) => { DATA._byId[c.id] = [pi, ci]; }));
   }
   function nirRow(c) {
-    return `<div class="crow" data-id="${esc(c.id)}">
+    const clickable = !!c.id;
+    return `<div class="crow ${clickable ? "" : "crow-static"}" ${clickable ? `data-id="${esc(c.id)}"` : ""}>
       <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
       <span style="margin-left:auto">${stageTag(c.process_label, c.process_key)}</span>
-      <span class="chev">&rsaquo;</span></div>`;
+      ${clickable ? `<span class="chev">&rsaquo;</span>` : ""}</div>`;
+  }
+  function shmulikSection(list) {
+    const byRole = {};
+    list.forEach(c => { (byRole[c.role] = byRole[c.role] || []).push(c); });
+    return Object.keys(byRole).sort().map(role => `
+      <div class="role-sub">${esc(role)} <span class="role-count">${byRole[role].length}</span></div>
+      ${byRole[role].map(nirRow).join("")}`).join("");
   }
 
   function renderHome() {
@@ -342,7 +354,7 @@
       html += `<div class="sec-title">In motion &middot; with the hiring managers</div><div class="card dim-card" style="padding:6px 20px">${inMotion.map(nirRow).join("")}</div>`;
     }
     if ((n.shmulik || []).length) {
-      html += `<div class="sec-title">Shmulik's pipeline &middot; in screening with the recruiter</div><div class="card dim-card" style="padding:6px 20px">${n.shmulik.map(nirRow).join("")}</div>`;
+      html += `<div class="sec-title">Shmulik's pipeline &middot; ${n.shmulik.length} candidates in work across all roles</div><div class="card dim-card" style="padding:6px 20px">${shmulikSection(n.shmulik)}</div>`;
     }
     if (!going.length && !hired.length && !rejected.length) {
       html += `<div class="banner quiet">No candidates in your pipeline yet. They appear here the moment one is cleared to you.</div>`;
