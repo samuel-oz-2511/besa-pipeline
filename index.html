@@ -114,15 +114,17 @@
   .evidence { color: var(--text-3); font-size: 12.5px; margin-top: 2px; }
   .stars { color: var(--amber); letter-spacing: 2px; font-size: 14px; }
   .screl { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
-  .gates { display: flex; gap: 8px; margin-top: 16px; }
-  .pgate { flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-sunken); }
-  .pgate .glabel { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-4); }
-  .pgate .gres { font-size: 13px; font-weight: 750; margin-top: 4px; }
-  .pgate .gdate { font-size: 10.5px; color: var(--text-4); margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .pgate.g-pass { background: var(--green-bg); border-color: var(--green-border); } .pgate.g-pass .gres { color: var(--green); }
-  .pgate.g-reject { background: var(--red-bg); border-color: var(--red-border); } .pgate.g-reject .gres { color: var(--red); }
-  .pgate.g-pending { background: var(--amber-bg); border-color: var(--amber-border); } .pgate.g-pending .gres { color: var(--amber); }
-  .pgate.g-not_reached .gres { color: var(--text-4); }
+  .rail { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 6px; }
+  .rrow { display: flex; align-items: center; gap: 10px; padding: 7px 2px; }
+  .rdot { width: 12px; height: 12px; border-radius: 50%; flex: none; border: 2px solid var(--border); background: var(--bg); position: relative; }
+  .rrow.r-done .rdot { background: var(--green); border-color: var(--green); }
+  .rrow.r-current .rdot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgba(40,87,214,.18); }
+  .rlabel { font-size: 13px; color: var(--text-4); }
+  .rrow.r-done .rlabel { color: var(--text-2); }
+  .rrow.r-current .rlabel { color: var(--text); font-weight: 700; }
+  .rdate { margin-left: auto; font-size: 11px; color: var(--text-4); font-variant-numeric: tabular-nums; }
+  .rail-outcome { margin-top: 6px; font-size: 12.5px; font-weight: 700; }
+  .rail-outcome.o-red { color: var(--red); } .rail-outcome.o-green { color: var(--green); }
   .gdots { display: inline-flex; gap: 4px; margin-left: 8px; }
   .gdot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg-active); }
   .gdot.g-pass { background: var(--green); } .gdot.g-reject { background: var(--red); } .gdot.g-pending { background: var(--amber); }
@@ -192,20 +194,19 @@
     return `<span class="ring ${lg ? "lg" : ""}" style="color:${c};background:${bg};border:3px solid ${bd}">${fit}</span>`;
   }
   function vclass(k) { return k === "advance" ? "v-green" : (k === "borderline" ? "v-amber" : "v-red"); }
-  const GATE_RESULT = { pass: "Pass", reject: "Reject", pending: "In progress", not_reached: "\u2014" };
-  function gateDots(c) {
-    if (!c.gates) return "";
-    return `<span class="gdots">` + c.gates.map(g =>
-      `<span class="gdot g-${g.result}" title="${esc(g.gate)}: ${GATE_RESULT[g.result] || g.result}${g.at ? " (" + g.at + ")" : ""}"></span>`).join("") + `</span>`;
-  }
+  function gateDots(c) { return ""; }
   function gateStrip(c) {
-    if (!c.gates) return "";
-    return `<div class="gates">` + c.gates.map(g => `
-      <div class="pgate g-${g.result}">
-        <div class="glabel">${esc(g.gate)}</div>
-        <div class="gres">${GATE_RESULT[g.result] || esc(g.result)}</div>
-        <div class="gdate">${g.at ? esc(g.at) : "&nbsp;"}</div>
+    if (!c.process) return "";
+    let html = `<div class="rail">` + c.process.map(st => `
+      <div class="rrow r-${st.state}">
+        <span class="rdot"></span>
+        <span class="rlabel">${esc(st.label)}</span>
+        ${st.at ? `<span class="rdate">${esc(st.at)}</span>` : ""}
       </div>`).join("") + `</div>`;
+    if (c.stage === "Passed") html += `<div class="rail-outcome o-red">Passed on this candidate</div>`;
+    else if (c.stage === "Hired") html += `<div class="rail-outcome o-green">Hired</div>`;
+    else if (c.stage === "Parked") html += `<div class="rail-outcome">On hold</div>`;
+    return html;
   }
   function freshness(ts) {
     const d = new Date(ts.slice(0,4) + "-" + ts.slice(4,6) + "-" + ts.slice(6,8) + "T" +
@@ -217,7 +218,6 @@
   }
 
   // ---- views ----
-  const STAGE_RAIL = ["In screening", "Interviewed", "Ready for you", "Hired"];
   function buildIndex() {
     DATA._byId = {};
     DATA.positions.forEach((p, pi) => p.candidates.forEach((c, ci) => { DATA._byId[c.id] = [pi, ci]; }));
@@ -275,7 +275,7 @@
         html += p.candidates.map((c, ci) => `
           <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
             ${ring(c.fit, c.fit_band)}
-            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.stage)}${gateDots(c)}</div></div>
+            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : (c.process_label || c.stage))}</div></div>
             ${c.verdict ? `<span class="vpill ${vclass(c.verdict_key)}" style="margin-left:auto">${esc(c.verdict)}</span>` : ""}
             <span class="chev">&rsaquo;</span>
           </div>`).join("");
@@ -303,7 +303,6 @@
 
   function renderDetail(pi, ci) {
     const p = DATA.positions[pi], c = p.candidates[ci];
-    const railStop = c.stage === "Passed" ? -1 : STAGE_RAIL.indexOf(c.stage);
     let html = `<button class="back" id="back">&lsaquo; All candidates</button>
       <div class="card">
         <div class="dhead">${ring(c.fit, c.fit_band, true)}
