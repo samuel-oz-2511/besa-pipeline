@@ -88,6 +88,12 @@
   .cname { font-weight: 650; font-size: 14.5px; }
   .cstage { font-size: 12px; color: var(--text-3); }
   .chev { margin-left: auto; color: var(--text-4); flex-shrink: 0; }
+  .stagetag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 10px;
+    border-radius: 14px; background: var(--accent-soft, rgba(40,87,214,.08));
+    color: var(--accent); border: 1px solid rgba(40,87,214,.32); white-space: nowrap; }
+  .stagetag.big { font-size: 13px; padding: 5px 14px; margin-top: 6px; }
+  .lilink { font-size: 12px; color: var(--accent); text-decoration: none; font-weight: 650; }
+  .lilink:hover { text-decoration: underline; }
   .vpill { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
            padding: 2px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
   .v-green { color: var(--green); background: var(--green-bg); border-color: var(--green-border); }
@@ -193,7 +199,10 @@
     const [c, bg, bd] = bandColors(band);
     return `<span class="ring ${lg ? "lg" : ""}" style="color:${c};background:${bg};border:3px solid ${bd}">${fit}</span>`;
   }
-  function vclass(k) { return k === "advance" ? "v-green" : (k === "borderline" ? "v-amber" : "v-red"); }
+  function stageTag(label, big) {
+    if (!label) return "";
+    return `<span class="stagetag ${big ? "big" : ""}">${esc(label)}</span>`;
+  }
   function gateDots(c) { return ""; }
   function gateStrip(c) {
     if (!c.process) return "";
@@ -224,9 +233,8 @@
   }
   function nirRow(c) {
     return `<div class="crow" data-id="${esc(c.id)}">
-      ${ring(c.fit, c.fit_band)}
       <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
-      ${c.verdict ? `<span class="vpill ${vclass(c.verdict_key)}" style="margin-left:auto">${esc(c.verdict)}</span>` : ""}
+      <span style="margin-left:auto">${stageTag(c.process_label)}</span>
       <span class="chev">&rsaquo;</span></div>`;
   }
 
@@ -274,9 +282,8 @@
       if (p.candidates.length) {
         html += p.candidates.map((c, ci) => `
           <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
-            ${ring(c.fit, c.fit_band)}
-            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : (c.process_label || c.stage))}</div></div>
-            ${c.verdict ? `<span class="vpill ${vclass(c.verdict_key)}" style="margin-left:auto">${esc(c.verdict)}</span>` : ""}
+            <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
+            <span style="margin-left:auto">${stageTag(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : c.process_label)}</span>
             <span class="chev">&rsaquo;</span>
           </div>`).join("");
       } else {
@@ -305,10 +312,10 @@
     const p = DATA.positions[pi], c = p.candidates[ci];
     let html = `<button class="back" id="back">&lsaquo; All candidates</button>
       <div class="card">
-        <div class="dhead">${ring(c.fit, c.fit_band, true)}
-          <div><h1>${esc(c.name)}</h1><div class="sub">${esc(c.role)}</div>
-          ${c.verdict ? `<div style="margin-top:6px"><span class="vpill ${vclass(c.verdict_key)}">${esc(c.verdict)}</span>
-            ${c.confidence ? `<span style="font-size:11.5px;color:var(--text-4)"> ${esc(c.confidence)} confidence</span>` : ""}</div>` : ""}
+        <div class="dhead">
+          <div><h1>${esc(c.name)}</h1><div class="sub">${esc(c.role)}
+            ${c.linkedin ? ` &middot; <a class="lilink" href="${esc(c.linkedin)}" target="_blank" rel="noopener">LinkedIn &#8599;</a>` : ""}</div>
+          <div>${stageTag(["Passed","Hired","Parked"].includes(c.stage) ? c.stage : c.process_label, true)}</div>
           </div></div>
         ${gateStrip(c)}
       </div>`;
@@ -332,12 +339,6 @@
         <div class="screl"><span>${esc(s.label)}</span>
           <span>${s.stars ? `<span class="stars">${"★".repeat(s.stars)}${"☆".repeat(5 - s.stars)}</span>`
                           : `<span style="color:var(--text-4);font-size:12px">not covered</span>`}</span></div>`).join("") + `</div>`;
-    }
-    if (c.breakdown && c.breakdown.length) {
-      html += `<div class="card"><details><summary>See the full breakdown</summary>` +
-        c.breakdown.map(d => `<div class="fact"><span class="tag t-neutral num">${d.score}/10</span>
-          <div>${esc(d.label)}${d.rationale ? `<div class="evidence">${esc(d.rationale)}</div>` : ""}</div></div>`).join("") +
-        `</details></div>`;
     }
     if (c.timeline && c.timeline.length) {
       html += `<div class="card"><h3>Timeline</h3>` + c.timeline.map(t =>
