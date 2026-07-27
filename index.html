@@ -59,6 +59,8 @@
   .tile.rej .tn { color: var(--red); }
   .tile .tl { font-size: 11.5px; font-weight: 650; color: var(--text-3); margin-top: 5px; text-transform: uppercase; letter-spacing: .04em; }
   .tile .ts { font-size: 10.5px; color: var(--text-4); margin-top: 2px; }
+  .action-card { border-left: 3px solid var(--accent); }
+  .dim-card { opacity: .82; }
   .sec-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-4); margin: 20px 0 6px; }
   .muted-line { font-size: 12.5px; color: var(--text-4); margin: 10px 2px; }
   .divider { border: none; border-top: 1px solid var(--border); margin: 26px 0 16px; }
@@ -332,14 +334,19 @@
     buildIndex();
     const n = DATA.nir;
     const going = n.going_to_see, hired = n.hired, rejected = n.rejected;
+    const forYou = going.filter(c => c.action_needed);
+    const inMotion = going.filter(c => !c.action_needed);
     let html = `<div class="tiles">
-      <div class="tile lead"><div class="tn">${going.length}</div><div class="tl">Going to see</div><div class="ts">coming up for you</div></div>
+      <div class="tile lead"><div class="tn">${forYou.length}</div><div class="tl">Waiting for you</div><div class="ts">your next interviews</div></div>
       <div class="tile"><div class="tn">${n.seen_count}</div><div class="tl">Seen</div><div class="ts">${hired.length} hired &middot; ${rejected.length} passed</div></div>
       <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">you passed</div></div>
     </div>`;
 
-    if (going.length) {
-      html += `<div class="sec-title">Coming up for you</div><div class="card" style="padding:6px 20px">${going.map(nirRow).join("")}</div>`;
+    if (forYou.length) {
+      html += `<div class="sec-title">Waiting for you</div><div class="card action-card" style="padding:6px 20px">${forYou.map(nirRow).join("")}</div>`;
+    }
+    if (inMotion.length) {
+      html += `<div class="sec-title">In motion &middot; with the hiring managers</div><div class="card dim-card" style="padding:6px 20px">${inMotion.map(nirRow).join("")}</div>`;
     }
     if (hired.length || rejected.length) {
       html += `<div class="sec-title">You've decided</div><div class="card" style="padding:6px 20px">${hired.concat(rejected).map(nirRow).join("")}</div>`;
