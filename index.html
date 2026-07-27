@@ -154,13 +154,6 @@
   .gdots { display: inline-flex; gap: 4px; margin-left: 8px; }
   .gdot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg-active); }
   .gdot.g-pass { background: var(--green); } .gdot.g-reject { background: var(--red); } .gdot.g-pending { background: var(--amber); }
-  .rail { display: flex; align-items: center; gap: 4px; margin: 6px 0 2px; }
-  .rnode { width: 10px; height: 10px; border-radius: 50%; background: var(--bg-active); flex-shrink: 0; }
-  .rnode.donept { background: var(--accent); }
-  .rnode.cur { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .rline { flex: 1; height: 2px; background: var(--bg-active); }
-  .rline.donept { background: var(--accent); }
-  .rlabel { font-size: 12px; color: var(--text-2); font-weight: 650; margin-top: 6px; }
   details { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
   summary { cursor: pointer; font-size: 13px; font-weight: 650; color: var(--text-3); }
   ul.plain { padding-left: 18px; font-size: 13.5px; }
@@ -339,7 +332,7 @@
     let html = `<div class="tiles">
       <div class="tile lead"><div class="tn">${forYou.length}</div><div class="tl">Waiting for you</div><div class="ts">your next interviews</div></div>
       <div class="tile"><div class="tn">${n.seen_count}</div><div class="tl">Seen</div><div class="ts">${hired.length} hired &middot; ${rejected.length} passed</div></div>
-      <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">you passed</div></div>
+      <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">no longer active</div></div>
     </div>`;
 
     if (forYou.length) {
@@ -349,7 +342,7 @@
       html += `<div class="sec-title">In motion &middot; with the hiring managers</div><div class="card dim-card" style="padding:6px 20px">${inMotion.map(nirRow).join("")}</div>`;
     }
     if (hired.length || rejected.length) {
-      html += `<div class="sec-title">You've decided</div><div class="card" style="padding:6px 20px">${hired.concat(rejected).map(nirRow).join("")}</div>`;
+      html += `<div class="sec-title">Out of pipeline</div><div class="card" style="padding:6px 20px">${hired.concat(rejected).map(nirRow).join("")}</div>`;
     }
     if (!going.length && !hired.length && !rejected.length) {
       html += `<div class="banner quiet">No candidates in your pipeline yet. They appear here the moment one is cleared to you.</div>`;
