@@ -88,12 +88,15 @@
   .fnum { width: 34px; text-align: right; font-size: 12px; color: var(--text-2); }
 
   .crow { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); cursor: pointer; }
+  .crow > div:first-child { flex: 1; min-width: 0; }
+  .crow .ctag { flex-shrink: 0; }
+  .crow .chev-slot { width: 10px; flex-shrink: 0; text-align: right; }
   .crow:active { background: var(--bg-sunken); }
   .ring { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
           font-size: 13px; font-weight: 750; font-variant-numeric: tabular-nums; }
   .cname { font-weight: 650; font-size: 14.5px; }
   .cstage { font-size: 12px; color: var(--text-3); }
-  .chev { margin-left: auto; color: var(--text-4); flex-shrink: 0; }
+  .chev { color: var(--text-4); }
   :root { --stage-1:#57606f; --stage-1-bg:#f2f4f7; --stage-1-border:#d4d7de;
     --stage-2:#0e7490; --stage-2-bg:#ecf6f9; --stage-2-border:#b3dbe6;
     --stage-3:#0c6478; --stage-3-bg:#ddeef4; --stage-3-border:#8fc8da;
@@ -324,8 +327,8 @@
     const clickable = !!c.id;
     return `<div class="crow ${clickable ? "" : "crow-static"}" ${clickable ? `data-id="${esc(c.id)}"` : ""}>
       <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
-      <span style="margin-left:auto">${stageTag(c.process_label, c.process_key)}</span>
-      ${clickable ? `<span class="chev">&rsaquo;</span>` : ""}</div>`;
+      <span class="ctag">${stageTag(c.process_label, c.process_key)}</span>
+      <span class="chev-slot">${clickable ? `<span class="chev">&rsaquo;</span>` : ""}</span></div>`;
   }
   function shmulikSection(list) {
     const byRole = {};
@@ -383,8 +386,8 @@
         html += p.candidates.map((c, ci) => `
           <div class="crow ${c.stage === "Passed" ? "dim-row" : ""}" data-pos="${pi}" data-c="${ci}">
             <div><div class="cname">${esc(c.name)}</div><div class="cstage">${esc(c.role)}</div></div>
-            <span style="margin-left:auto">${["Passed","Hired","Parked"].includes(c.stage) ? stageTag(c.stage, c.stage) : stageTag(c.process_label, c.process_key)}</span>
-            <span class="chev">&rsaquo;</span>
+            <span class="ctag">${["Passed","Hired","Parked"].includes(c.stage) ? stageTag(c.stage, c.stage) : stageTag(c.process_label, c.process_key)}</span>
+            <span class="chev-slot"><span class="chev">&rsaquo;</span></span>
           </div>`).join("");
       } else {
         html += `<div class="crow" style="cursor:default;color:var(--text-4);font-size:13px">
