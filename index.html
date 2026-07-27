@@ -417,31 +417,7 @@
         ${gateStrip(c)}
       </div>`;
 
-    if (c.headline) html += `<div class="card"><h3>The call in one line</h3><p class="headline">${esc(c.headline)}</p></div>`;
-    if (c.checked_out && c.checked_out.length) {
-      html += `<div class="card"><h3>What checked out</h3>` + c.checked_out.map(f => `
-        <div class="fact"><span class="tag t-${f.met === "yes" ? "yes" : f.met === "no" ? "no" : f.met === "partial" ? "partial" : "neutral"}">${esc(f.met || "n/a").replace("_", " ")}</span>
-          <div>${esc(f.point)}${f.evidence ? `<div class="evidence">${esc(f.evidence)}</div>` : ""}</div></div>`).join("") + `</div>`;
-    }
-    if (c.watch_outs && c.watch_outs.length) {
-      html += `<div class="card"><h3>Watch-outs</h3><ul class="plain">` +
-        c.watch_outs.map(w => `<li>${esc(w)}</li>`).join("") + `</ul></div>`;
-    }
-    if (c.new_in_interview && c.new_in_interview.length) {
-      html += `<div class="card"><h3>New in the interview</h3><ul class="plain">` +
-        c.new_in_interview.map(w => `<li>${esc(w)}</li>`).join("") + `</ul></div>`;
-    }
-    if (c.scorecard && c.scorecard.some(s => s.stars)) {
-      html += `<div class="card"><h3>Interview scorecard</h3>` + c.scorecard.map(s => `
-        <div class="screl"><span>${esc(s.label)}</span>
-          <span>${s.stars ? `<span class="stars">${"★".repeat(s.stars)}${"☆".repeat(5 - s.stars)}</span>`
-                          : `<span style="color:var(--text-4);font-size:12px">not covered</span>`}</span></div>`).join("") + `</div>`;
-    }
-    if (c.timeline && c.timeline.length) {
-      html += `<div class="card"><h3>Timeline</h3>` + c.timeline.map(t =>
-        `<div class="screl"><span>${esc(t.stage)}</span><span class="num" style="color:var(--text-4);font-size:12.5px">${t.at.slice(0,4)}-${t.at.slice(4,6)}-${t.at.slice(6,8)}</span></div>`).join("") + `</div>`;
-    }
-    html += `<div class="footer-note">Assessments are prepared from CVs and interview transcripts to speed your read.<br>The call is yours.</div>`;
+    html += `<div class="footer-note">Pipeline status prepared by Shmulik. Full candidate details in your interview invite or on request.</div>`;
     $("view").innerHTML = html;
     $("back").addEventListener("click", renderHome);
     window.scrollTo(0, 0);
