@@ -342,12 +342,13 @@
     buildIndex();
     const n = DATA.nir;
     const going = n.going_to_see, hired = n.hired, rejected = n.rejected;
+    const withdrawn = n.withdrawn || [];
     const forYou = going.filter(c => c.action_needed);
     const inMotion = going.filter(c => !c.action_needed);
     let html = `<div class="tiles">
       <div class="tile lead"><div class="tn">${forYou.length}</div><div class="tl">Waiting for you</div><div class="ts">your next interviews</div></div>
       <div class="tile"><div class="tn">${n.seen_count}</div><div class="tl">Seen</div><div class="ts">${hired.length} hired &middot; ${rejected.length} passed</div></div>
-      <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">no longer active</div></div>
+      <div class="tile rej"><div class="tn">${rejected.length}</div><div class="tl">Rejected</div><div class="ts">${withdrawn.length ? withdrawn.length + " also withdrew" : "no longer active"}</div></div>
     </div>`;
 
     if (forYou.length) {
@@ -358,6 +359,9 @@
     }
     if ((n.shmulik || []).length) {
       html += `<div class="sec-title">Shmulik's pipeline &middot; ${n.shmulik.length} candidates in work across all roles</div><div class="card dim-card" style="padding:6px 20px">${shmulikSection(n.shmulik)}</div>`;
+    }
+    if (withdrawn.length) {
+      html += `<div class="sec-title">Withdrew &middot; candidate pulled out</div><div class="card dim-card" style="padding:6px 20px">${withdrawn.map(nirRow).join("")}</div>`;
     }
     if (!going.length && !hired.length && !rejected.length) {
       html += `<div class="banner quiet">No candidates in your pipeline yet. They appear here the moment one is cleared to you.</div>`;
