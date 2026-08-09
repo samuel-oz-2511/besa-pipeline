@@ -344,7 +344,6 @@
     buildIndex();
     const n = DATA.nir;
     const going = n.going_to_see, hired = n.hired, rejected = n.rejected;
-    const withdrawn = n.withdrawn || [];
     const forYou = going.filter(c => c.action_needed);
     const inMotion = going.filter(c => !c.action_needed);
     let html = `<div class="tiles">
